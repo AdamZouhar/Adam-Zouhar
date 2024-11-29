@@ -1,0 +1,123 @@
+"""
+project_1.py: First project for Engeto Online Python Academy
+
+author: Adam Zouhar
+email: AdamZouhar86@email.cz
+"""
+import re  # Import for regular expressions
+
+# Registered users
+USERS = {
+    "bob": "123",
+    "ann": "pass123",
+    "mike": "password123",
+    "liz": "pass123"
+}
+
+# Texts for analysis
+TEXTS = [
+    """Situated about 10 miles west of Kemmerer,
+    Fossil Butte is a ruggedly impressive
+    topographic feature that rises sharply
+    some 1000 feet above Twin Creek Valley
+    to an elevation of more than 7500 feet
+    above sea level. The butte is located just
+    north of US 30N and the Union Pacific Railroad,
+    which traverse the valley.""",
+    """At the base of Fossil Butte are the bright
+    red, purple, yellow and gray beds of the Wasatch
+    Formation. Eroded portions of these horizontal
+    beds slope gradually upward from the valley floor
+    and steepen abruptly. Overlying them and extending
+    to the top of the butte are the much steeper
+    buff-to-white beds of the Green River Formation,
+    which are about 300 feet thick.""",
+    """The monument contains 8198 acres and protects
+    a portion of the largest deposit of freshwater fish
+    fossils in the world. The richest fossil fish deposits
+    are found in multiple limestone layers, which lie some
+    100 feet below the top of the butte. The fossils
+    represent several varieties of perch, as well as
+    other freshwater genera and herring similar to those
+    in modern oceans. Other fish such as paddlefish,
+    garpike and stingray are also present."""
+]
+
+# User login with a limit of 3 attempts
+attempts = 3
+while attempts > 0:
+    print("Username:", end=" ")
+    username = input().strip()
+    print("Password:", end=" ")
+    password = input().strip()
+
+    # Login verification
+    if username not in USERS:
+        print("Unregistered user, terminating the program..")
+        exit()
+    elif USERS[username] != password:
+        attempts -= 1
+        if attempts > 0:
+            print(f"Incorrect password, you have {attempts} more attempt(s).")
+        else:
+            print("Incorrect password, no attempts left. Terminating the program..")
+            exit()
+    else:
+        break  # Exit the loop if the login is successful
+
+# Welcome message
+print("----------------------------------------")
+print(f"Welcome to the app, {username}.")
+print(f"We have {len(TEXTS)} texts for analysis.")
+print("----------------------------------------")
+
+# Text selection
+print("Enter a number between 1 and 3 to select a text:", end=" ")
+user_input = input().strip()
+
+# Validate user input
+if not user_input.isdigit():
+    print("Invalid input! You must enter a number. Terminating the program..")
+    exit()
+
+choice = int(user_input)
+if choice < 1 or choice > len(TEXTS):
+    print("Invalid input! The number is out of range. Terminating the program..")
+    exit()
+
+# Analysis of the selected text
+selected_text = TEXTS[choice - 1]
+words = re.findall(r"\b\w+\b", selected_text)  # Find only words and numbers
+
+# Word count
+num_words = len(words)
+
+# Word analysis
+titlecase_words = sum(1 for word in words if word.istitle())
+uppercase_words = sum(1 for word in words if word.isupper())
+lowercase_words = sum(1 for word in words if word.islower())
+numeric_strings = [int(word) for word in words if word.isdigit()]
+sum_numbers = sum(numeric_strings)
+
+# Results
+print(f"----------------------------------------")
+print(f"There are {num_words} words in the selected text.")
+print(f"There are {titlecase_words} titlecase words.")
+print(f"There are {uppercase_words} uppercase words.")
+print(f"There are {lowercase_words} lowercase words.")
+print(f"There are {len(numeric_strings)} numeric strings.")
+print(f"The sum of all the numbers is {sum_numbers}")
+print(f"----------------------------------------")
+
+# Histogram of word lengths
+word_lengths = {}
+for word in words:
+    length = len(word)
+    word_lengths[length] = word_lengths.get(length, 0) + 1
+
+# Creating the bar chart
+print(f"LEN|  OCCURRENCES  |NR.")
+print(f"----------------------------------------")
+for length in sorted(word_lengths.keys()):
+    stars = "*" * word_lengths[length]
+    print(f"{length:>3}| {stars:<12} |{word_lengths[length]}")
